@@ -1,0 +1,6 @@
+# X6 模型对话增强（搜索 + 多模态标签）
+- insert:
+    - id: x6-chat-enhance
+      name: '@x6_ai/x6-plugin-chat-enhance'
+      config:
+        maxRecent: 4
