@@ -1,7 +1,7 @@
 {
   "name": "@x6_ai/x6-plugin-chat-enhance",
   "description": "X6 chat enhance: searchable model picker with image capability tags",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",

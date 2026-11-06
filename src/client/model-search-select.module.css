@@ -309,7 +309,8 @@
   top: 0;
   z-index: 1;
   padding: 5px 8px 3px;
-  background: var(--dsw-specific-menu);
+  /* Opaque sticky fill (not --dsw-specific-menu glass) so rows don't show through. */
+  background: var(--dsw-alias-menu-group-header-fill);
   color: var(--dsw-alias-label-tertiary);
   font-size: 12px;
   line-height: 18px;
