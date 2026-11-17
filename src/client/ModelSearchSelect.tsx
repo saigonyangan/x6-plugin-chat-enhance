@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -38,6 +39,38 @@ import css from './model-search-select.module.css'
 const DEFAULT_MAX_RECENT = 8
 /** Show the back-to-top control after the catalog scrolls past this many pixels. */
 const BACK_TOP_THRESHOLD = 80
+/** Gap between the picker and the composer card above the trigger. */
+const PANEL_GAP = 8
+/** Keep the picker below the conversation header. */
+const PANEL_TOP_MARGIN = 12
+/** Preferred picker height when the viewport has room. */
+const PANEL_MAX_HEIGHT = 420
+
+interface PanelFrame {
+  readonly bottom: number
+  readonly maxHeight: number
+}
+
+/**
+ * Place the picker above the whole composer card.
+ * Anchoring to the chip row alone lets the card cover the bottom of the list.
+ */
+function measurePanelFrame(root: HTMLElement): PanelFrame {
+  const rootRect = root.getBoundingClientRect()
+  const card = root.closest('[data-composer-card]')
+  const anchorTop = card instanceof HTMLElement
+    ? card.getBoundingClientRect().top
+    : rootRect.top
+  const header = document.querySelector('header')
+  const limitTop = header instanceof HTMLElement
+    ? header.getBoundingClientRect().bottom + PANEL_TOP_MARGIN
+    : PANEL_TOP_MARGIN
+  const available = anchorTop - PANEL_GAP - limitTop
+  return {
+    bottom: rootRect.bottom - anchorTop + PANEL_GAP,
+    maxHeight: Math.max(160, Math.min(PANEL_MAX_HEIGHT, Math.floor(available))),
+  }
+}
 
 interface EffortChoice {
   readonly key: string
@@ -138,6 +171,26 @@ function ModelSearchSelectInner({
   const searchRef = useRef<HTMLInputElement | null>(null)
   const catalogRef = useRef<HTMLDivElement | null>(null)
   const panelId = useId()
+  const [panelFrame, setPanelFrame] = useState<PanelFrame | null>(null)
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setPanelFrame(null)
+      return
+    }
+    const measure = (): void => {
+      const root = rootRef.current
+      if (root === null) return
+      setPanelFrame(measurePanelFrame(root))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    window.addEventListener('scroll', measure, true)
+    return () => {
+      window.removeEventListener('resize', measure)
+      window.removeEventListener('scroll', measure, true)
+    }
+  }, [open])
 
   useEffect(() => {
     if (state.status !== 'ready' || state.groups.length === 0) return
@@ -448,6 +501,10 @@ function ModelSearchSelectInner({
           role="dialog"
           aria-label={t('picker.aria')}
           data-trigger-menu=""
+          style={panelFrame === null ? undefined : {
+            bottom: panelFrame.bottom,
+            maxHeight: panelFrame.maxHeight,
+          }}
         >
           <input
             ref={searchRef}

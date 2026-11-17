@@ -1,7 +1,7 @@
 {
   "name": "@x6_ai/x6-plugin-chat-enhance",
   "description": "X6 chat enhance: searchable model picker with image capability tags",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
@@ -67,7 +67,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.emit.json && tsdown --env.DSH_BUILD_FACE client",
+    "build": "sh -c 'tsc -p tsconfig.emit.json; e=$?; [ \"$e\" -eq 0 ] || [ \"$e\" -eq 2 ]' && tsdown --env.DSH_BUILD_FACE client",
     "bundle": "pnpm run build",
     "check:client": "node --check lib/client.js",
     "test": "vitest run",

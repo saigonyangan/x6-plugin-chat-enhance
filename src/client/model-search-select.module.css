@@ -86,7 +86,8 @@
   cursor: default;
 }
 
-/* Positioning only — fill + blur come from MenuSurface (.material / macOS backing). */
+/* Positioning only — fill + blur come from MenuSurface (.material / macOS backing).
+   bottom / max-height are measured so the panel clears the composer card and the header. */
 .panel {
   position: absolute;
   right: 0;
